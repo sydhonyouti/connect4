@@ -16,7 +16,7 @@ def createBoard(row, col):
         elif i < col:
             board.append(["^"] * col)
         else:
-            for j in range(row):
+            for j in range(row + 1):
                 boardLabel.append(str(j + 1))
             board.append(boardLabel)
 
