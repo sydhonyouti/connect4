@@ -39,28 +39,9 @@ def openRow(board, col):
 
 # Putting board pieces down
 # Player is X and AI is 0
-def dropPiece(lastTurn, col):
-    if Player == True:
-        board[lastTurn][col] = "X"
-    else:
-        board[lastTurn][col] = "O"
-    printBoard(board)
+def dropPiece(board, row, col, piece):
+    board[row][col] = piece
 
-# Keep the game to running (True) til it breaks. Then we can stop the game
-def playGame():
-    while True:
-        try:
-            column = int(input("Pick a column (1 - 7)")) - 1
-            if column >= 1 and column <= col:
-                for i in range(6):
-                    if board[i][column] == "_":
-                        last = i
-                dropPiece(last, column)
-            else:
-                raise "ERROR: You picked a column outside the board"
-            break
-        except:
-            print("Not a valid number! Please try again")
 
 # Alpha Beta Pruning
 # board = the board array
@@ -68,32 +49,36 @@ def playGame():
 # alpha = - infinity
 # beta = infinity
 # maximizingPlayer = True for Player and False for AI
+
+#get_valid_locations = this gets
 def alphabeta(board, depth, alpha, beta, maximizingPlayer):
-    valid_locations = get_valid_locations(board)
+    valid_locations = col_peek(board)
     is_terminal = is_terminal_node(board)
     if depth == 0 or is_terminal:
         if is_terminal:
-            if winning_move(board, AI_PIECE):
+            if check_win(board, AI_Piece):
                 return (None, 100000000000000)
-            elif winning_move(board, PLAYER_PIECE):
+            elif check_win(board, Player_Piece):
                 return (None, -10000000000000)
             else:  # Game is over, no more valid moves
                 return (None, 0)
         else:  # Depth is zero
-            return (None, score_position(board, AI_PIECE))
+            return (None, score_position(board, AI_Piece))
     if maximizingPlayer:
         value = -math.inf
         column = random.choice(valid_locations)
         for col in valid_locations:
             row = get_next_open_row(board, col)
             b_copy = board.copy()
-            drop_piece(b_copy, row, col, AI_PIECE)
-            new_score = minimax(b_copy, depth - 1, alpha, beta, False)[1]
+            dropPiece(b_copy, row, col, AI_Piece)
+            new_score = alphabeta(b_copy, depth - 1, alpha, beta, False)[1]
             if new_score > value:
                 value = new_score
                 column = col
             alpha = max(alpha, value)
             if alpha >= beta:
+                print("Pruned")
+                prune_score + 1
                 break
         return column, value
 
@@ -103,16 +88,17 @@ def alphabeta(board, depth, alpha, beta, maximizingPlayer):
         for col in valid_locations:
             row = get_next_open_row(board, col)
             b_copy = board.copy()
-            dropPiece(b_copy, row, col, PLAYER_PIECE)
-            new_score = minimax(b_copy, depth - 1, alpha, beta, True)[1]
+            dropPiece(b_copy, row, col, Player_Piece)
+            new_score = alphabeta(b_copy, depth - 1, alpha, beta, True)[1]
             if new_score < value:
                 value = new_score
                 column = col
             beta = min(beta, value)
             if alpha >= beta:
+                print("Pruned")
+                prune_score + 1
                 break
         return column, value
-
 
 # Checking for a winning move
 # player is whoever the turn is - could be Player or AI
@@ -142,6 +128,34 @@ def check_win(board, player):
                 return True
 
     return False
+
+# Loops through the game board to see what columns the AI can drop a piece in
+def col_peek(board):
+     valid_locations = []
+     for boardCol in range(col):
+         if inBound(board, col):
+             valid_locations.append(col)
+             return valid_locations
+
+# Checks if its in bounds of the board
+def inBound(board,col):
+    return board[row - 1][col] == 0
+
+# This function simulates dropping a piece
+# We create a temporary board that will get passed in the scorePosition function
+def simulateMove(board, piece):
+    valid_location = col_peek(board)
+    for col in valid_location:
+        row = getNextRow(board, col)
+        tempBoard = board.copy()  # Need this .copy() because when we use
+                                  # numpy it will only copy the same memory location
+        dropPiece(tempBoard, row, col, piece)
+        score = scorePosition(tempBoard, piece)
+        if score > bestScore:
+            bestScore = score
+            bestCol = col
+
+
 
 # Player turn: Will be randomized
 turn = random.randint(Player, AI)
