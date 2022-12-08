@@ -31,7 +31,7 @@ def printBoard(board):
     for row in board:
         print(" ".join(row))
     print("\n")
-#Check if next row in selected column is open
+#Check if next row in selected column is open.
 def openRow(board, col):
     for i in range(row):
         if board[i][col] == 0
