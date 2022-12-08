@@ -164,3 +164,5 @@ while not winner:
     # Asking for AI input
     if turn == AI and not winner:
         col, minmax
+
+        #checking if this pushes something
