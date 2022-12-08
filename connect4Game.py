@@ -14,6 +14,10 @@ winner = False
 AI = 0  # representing as False
 Player = 1  # representing as True
 
+Player_Piece = 1
+AI_Piece = 2
+
+
 # Board setup
 def createBoard(row, col):
     for i in range(8):
@@ -31,10 +35,11 @@ def printBoard(board):
     for row in board:
         print(" ".join(row))
     print("\n")
-#Check if next row in selected column is open.
+
+# Check if next row in selected column is open.
 def openRow(board, col):
     for i in range(row):
-        if board[i][col] == 0
+        if board[i][col] == 0:
             return i
 
 # Putting board pieces down
@@ -68,7 +73,7 @@ def alphabeta(board, depth, alpha, beta, maximizingPlayer):
         value = -math.inf
         column = random.choice(valid_locations)
         for col in valid_locations:
-            row = get_next_open_row(board, col)
+            row = openRow(board, col)
             b_copy = board.copy()
             dropPiece(b_copy, row, col, AI_Piece)
             new_score = alphabeta(b_copy, depth - 1, alpha, beta, False)[1]
@@ -86,7 +91,7 @@ def alphabeta(board, depth, alpha, beta, maximizingPlayer):
         value = math.inf
         column = random.choice(valid_locations)
         for col in valid_locations:
-            row = get_next_open_row(board, col)
+            row = openRow(board, col)
             b_copy = board.copy()
             dropPiece(b_copy, row, col, Player_Piece)
             new_score = alphabeta(b_copy, depth - 1, alpha, beta, True)[1]
@@ -146,7 +151,7 @@ def inBound(board,col):
 def simulateMove(board, piece):
     valid_location = col_peek(board)
     for col in valid_location:
-        row = getNextRow(board, col)
+        row = openRow(board, col)
         tempBoard = board.copy()  # Need this .copy() because when we use
                                   # numpy it will only copy the same memory location
         dropPiece(tempBoard, row, col, piece)
