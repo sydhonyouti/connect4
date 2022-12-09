@@ -21,11 +21,11 @@ def newBoard():
 def putPieceonBoard(board, row, col, piece):
     board[row][col] = piece
 
-
+# Checks to see if the location is open to potentially drop a piece in
 def locationExists(board, col):
     return board[maxRow - 1][col] == 0
 
-
+# Check if next row in selected column is open.
 def openRow(board, col):
     for r in range(maxRow):
         if board[r][col] == 0:
@@ -35,7 +35,8 @@ def openRow(board, col):
 def printBoard(board):
     print(createBoard.flip(board, 0))
 
-
+# Checking for a winning move
+# player is whoever the turn is - could be Player or AI
 def checkWin(board, piece):
     # Check horizontal locations for win
     for c in range(maxCol - 3):
@@ -71,9 +72,19 @@ def getExistingLoc(board):
             existingLoc.append(col)
     return existingLoc
 
+# There is 3 conditions that needs to be used
+# 1. If Player wins
+# 2. If AI wins
+# 3. If the board is filled up
 def terminalNode(board):
     return checkWin(board, PLAYER_PIECE) or checkWin(board, AI_PIECE) or len(getExistingLoc(board)) == 0
 
+# Alpha Beta Pruning
+# board = the board array
+# depth = how deep we are trying to get into the tree
+# alpha = - infinity
+# beta = infinity
+# maximizingPlayer = True for Player and False for AI
 def alphabeta(board, depth, alpha, beta, maximizingPlayer):
     validLoc = getExistingLoc(board)
     terminal = terminalNode(board)
